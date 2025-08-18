@@ -6,10 +6,26 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+model Case{
+  id Int @id @default(autoincrement())
+  name String
+  Document Document[]
+}
+model Document{
+  id Int @id @default(autoincrement())
+  name String
+  postingDate DateTime          @default(now())
+  caseId Int
+  Case Case @relation(fields: [caseId],references: [id])
+}
+model File{
+    id Int @id @default(autoincrement())
+    name String
+    path String
 }
