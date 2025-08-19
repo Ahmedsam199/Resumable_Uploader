@@ -7,6 +7,7 @@ import {
   ListBucketsCommand,
   CreateBucketCommand,
   ListPartsCommand,
+  PutObjectCommand,
 } from '@aws-sdk/client-s3';
 
 @Injectable()
@@ -102,5 +103,23 @@ export class MinioService {
     });
     const response = await this.client.send(command);
     return response;
+  }
+  async uploadFile(bucket: string, objectName: string, fileBuffer: Buffer) {
+    await this.ensureBucket(bucket);
+
+    try {
+      const command = new PutObjectCommand({
+        Bucket: bucket,
+        Key: objectName,
+        Body: fileBuffer,
+      });
+
+      const response = await this.client.send(command);
+      this.logger.log(`File ${objectName} uploaded to bucket ${bucket}`);
+      return response;
+    } catch (error) {
+      this.logger.error(`Failed to upload file ${objectName}:`, error);
+      throw error;
+    }
   }
 }

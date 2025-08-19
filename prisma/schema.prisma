@@ -23,9 +23,13 @@ model Document{
   postingDate DateTime          @default(now())
   caseId Int
   Case Case @relation(fields: [caseId],references: [id])
+
+  File File[]
 }
 model File{
     id Int @id @default(autoincrement())
     name String
     path String
+    documentId Int
+    Document Document @relation(fields: [documentId], references: [id])
 }

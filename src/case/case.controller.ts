@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { CaseService } from './case.service';
 import { CaseDTO } from './case.DTO';
 
@@ -12,5 +12,9 @@ export class CaseController {
   @Post('')
   async createCase(@Body() data: CaseDTO) {
     return await this.caseService.createCase(data);
+  }
+  @Get(':id')
+  async getCaseById(@Param('id') id: string) {
+    return await this.caseService.getCaseById(+id);
   }
 }
