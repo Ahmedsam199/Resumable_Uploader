@@ -7,10 +7,10 @@ export class CaseController {
   constructor(private readonly caseService: CaseService) {}
   @Get('')
   async getCases() {
-    await this.caseService.getCases();
+    return await this.caseService.getCases();
   }
   @Post('')
   async createCase(@Body() data: CaseDTO) {
-    await this.caseService.createCase(data);
+    return await this.caseService.createCase(data);
   }
 }
