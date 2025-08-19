@@ -19,7 +19,8 @@ export class MinioService {
     this.client = new S3Client({
       endpoint: 'http://localhost:9000',
       region: 'us-east-1',
-      forcePathStyle: true, // required for MinIO
+      forcePathStyle: true,
+
       credentials: {
         accessKeyId: 'minioadmin',
         secretAccessKey: 'minioadmin',

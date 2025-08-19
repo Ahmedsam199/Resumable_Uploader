@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { DocumentService } from './document.service';
 import { DocumentDTO } from './document.dto';
 
@@ -12,5 +12,9 @@ export class DocumentController {
   @Post()
   async createDocument(@Body() data: DocumentDTO) {
     return await this.documentService.create(data);
+  }
+  @Get(':id')
+  async getById(@Param('id') id: string) {
+    return await this.documentService.getById(+id);
   }
 }

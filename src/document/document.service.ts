@@ -13,4 +13,10 @@ export class DocumentService {
   async create(data: DocumentDTO) {
     return await this.prismaService.document.create({ data });
   }
+  async getById(id: number) {
+    return await this.prismaService.document.findUnique({
+      where: { id },
+      include: { File: true },
+    });
+  }
 }
