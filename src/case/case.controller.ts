@@ -5,12 +5,12 @@ import { CaseDTO } from './case.DTO';
 @Controller('case')
 export class CaseController {
   constructor(private readonly caseService: CaseService) {}
-  @Get()
-  async findAll() {
-    return this.caseService.findAll();
+  @Get('')
+  async getCases() {
+    await this.caseService.getCases();
   }
-  @Post()
-  async create(@Body() data: CaseDTO) {
-    return this.caseService.create(data);
+  @Post('')
+  async createCase(@Body() data: CaseDTO) {
+    await this.caseService.createCase(data);
   }
 }

@@ -5,10 +5,10 @@ import { CaseDTO } from './case.DTO';
 @Injectable()
 export class CaseService {
   constructor(private readonly prismaService: PrismaService) {}
-  async findAll() {
-    return this.prismaService.case.findMany();
+  async getCases() {
+    return await this.prismaService.case.findMany({ orderBy: { id: 'desc' } });
   }
-  async create(data: CaseDTO) {
-    return this.prismaService.case.create({ data });
+  async createCase(data: CaseDTO) {
+    return await this.prismaService.case.create({ data });
   }
 }
