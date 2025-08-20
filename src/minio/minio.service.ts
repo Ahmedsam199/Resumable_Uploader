@@ -8,7 +8,9 @@ import {
   CreateBucketCommand,
   ListPartsCommand,
   PutObjectCommand,
+  GetObjectCommand,
 } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 @Injectable()
 export class MinioService {
@@ -92,6 +94,7 @@ export class MinioService {
       Bucket: bucket,
       Key: objectName,
       UploadId: uploadId,
+
       MultipartUpload: {
         Parts: parts.sort((a, b) => a.PartNumber - b.PartNumber),
       },
@@ -127,5 +130,17 @@ export class MinioService {
       this.logger.error(`Failed to upload file ${objectName}:`, error);
       throw error;
     }
+  }
+  async getFileLink(fileName: string, contentType: string) {
+    const command = new GetObjectCommand({
+      Bucket: 'resumable',
+      Key: fileName,
+      ResponseContentDisposition: 'inline',
+      ResponseContentType: contentType,
+    });
+
+    const url = await getSignedUrl(this.client, command, { expiresIn: 3600 }); // 1 hour expiry
+
+    return url;
   }
 }
