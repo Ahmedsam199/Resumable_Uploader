@@ -1,73 +1,96 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Resumable file uploader
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+This backend service manages **cases**, where each case contains **logs**, and each log acts as a folder holding **uploaded files**.
+It supports **resumable file uploads** to handle unreliable network conditions and pause resume features.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## Features
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- Create and get cases
+- each case got documents related to it
+- each document can handle multiple files inside it
+- Persistent storage using minio and S3 SDK
+- handling resumable file upload
 
-## Installation
+---
 
-```bash
-$ npm install
-```
+## Tech Stack
 
-## Running the app
+- **Language / Framework:** Typescript/NestJS
+- **Database:** MySQL(via Prisma)
+- **Other:** Docker, Minio(via S3)
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 20+
+- MySQL running locally
+- minio runninig via Docker
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+git clone https://github.com/Ahmedsam199/Resumable_Uploader.git
+cd your-repo
+npm install
 ```
 
-## Test
+---
+
+## How To Use The App
+
+you can use the frontend part that related to this project with the link
+
+you shuold have a minio bucked called resumable that you should create from the minio dashboard
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+`git clone https://github.com/Ahmedsam199/Resumable_Uploader.git
+cd your-repo
+npm install`
 ```
 
-## Support
+or use the seed for fast setup
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Multipart Upload Workflow
 
-## Stay in touch
+The backend supports **resumable multipart uploads** to handle large files and poor network conditions.
+All uploaded files are stored in **MinIO** and linked to **documents/logs** in **MySQL**.
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+The upload process involves **three main API calls**:
 
-## License
+### 1. `startMultipart` (Initialize Upload)
 
-Nest is [MIT licensed](LICENSE).
+The user will start upload process to initalize a new file
+
+**Endpoint:** `POST /files/start-upload`
+
+**Request:**
+
+```json
+{
+  "filename": "evidence_video.mp4",
+  "uploadId": 104857600
+}
+```
+
+### 2. Upload Part (Upload chunks)
+
+The user will upload a chunks and will recive an ETage and the part number
+
+**Endpoint:**`POST /files/start-upload`
+
+```
+{
+  "ETag": "a number tag",
+  "PartNumber": 3
+}
+
+```
+
+### 3. Complete the upload (Combine file)
+
+The user will give the parts that he recives then it will combine it and store it inside the minio S3 Bucket and save file info and path inside the DB
+
+**Endpoint:**`POST /files/complete-upload`
