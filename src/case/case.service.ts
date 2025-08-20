@@ -5,7 +5,9 @@ import { CaseDTO } from './case.DTO';
 @Injectable()
 export class CaseService {
   constructor(private readonly prisma: PrismaService) {}
-
+  /**
+   * Function to get all cases
+   */
   async getCases() {
     try {
       return await this.prisma.case.findMany({
@@ -19,7 +21,9 @@ export class CaseService {
       );
     }
   }
-
+  /**
+   * Function to create new cases
+   */
   async createCase(data: CaseDTO) {
     try {
       return await this.prisma.case.create({ data });
@@ -27,7 +31,9 @@ export class CaseService {
       throw new HttpException('Failed to create case', HttpStatus.BAD_REQUEST);
     }
   }
-
+  /**
+   * Function to retreive single case from id
+   */
   async getCaseById(id: number) {
     try {
       const caseRecord = await this.prisma.case.findUnique({
@@ -41,7 +47,6 @@ export class CaseService {
 
       return caseRecord;
     } catch (error) {
-      // Re-throw custom errors as-is, wrap others
       if (error instanceof HttpException) {
         throw error;
       }

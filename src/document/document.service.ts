@@ -11,6 +11,9 @@ export class DocumentService {
     private readonly utils: UtilService,
     private readonly minioService: MinioService,
   ) {}
+  /**
+   * Function to get all documents sorted by ids
+   */
   async getAllDocumetns() {
     try {
       return await this.prismaService.document.findMany({
@@ -23,6 +26,9 @@ export class DocumentService {
       );
     }
   }
+  /**
+   * Function to create new document
+   */
   async createNewDocument(data: DocumentDTO) {
     try {
       return await this.prismaService.document.create({ data });
@@ -33,7 +39,9 @@ export class DocumentService {
       );
     }
   }
-
+  /**
+   * Function to get single document including all files related to this document with file link to access the file
+   */
   async getDocumentById(id: number) {
     try {
       const document = await this.prismaService.document.findUnique({
@@ -44,6 +52,7 @@ export class DocumentService {
       if (!document) {
         throw new HttpException('Document not found', HttpStatus.NOT_FOUND);
       }
+      // Adding promise cause the minio file like is an async function
       const files = await Promise.all(
         document.File.map(async (file: any) => {
           const contentType = this.utils.getFileType(file.name);
