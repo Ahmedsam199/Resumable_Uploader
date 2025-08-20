@@ -42,7 +42,7 @@ describe('FilesService', () => {
       const fileInfo = { uploadId: '123', key: 'test.txt' };
       (minioService.startMultipart as jest.Mock).mockResolvedValue(fileInfo);
 
-      const result = await service.startUpload(data);
+      const result = await service.startUploadNewFile(data);
 
       expect(minioService.startMultipart).toHaveBeenCalledWith(
         'resumable',
@@ -56,9 +56,9 @@ describe('FilesService', () => {
         new Error('boom'),
       );
 
-      await expect(service.startUpload({ name: 'bad.txt' })).rejects.toThrow(
-        HttpException,
-      );
+      await expect(
+        service.startUploadNewFile({ name: 'bad.txt' }),
+      ).rejects.toThrow(HttpException);
     });
   });
 
@@ -67,7 +67,7 @@ describe('FilesService', () => {
       const uploadResult = { ETag: 'etag' };
       (minioService.uploadPart as jest.Mock).mockResolvedValue(uploadResult);
 
-      const result = await service.upload(
+      const result = await service.uploadFileChunk(
         'resumable',
         'file.txt',
         'uploadId',
@@ -90,7 +90,7 @@ describe('FilesService', () => {
         new Error('fail'),
       );
       await expect(
-        service.upload(
+        service.uploadFileChunk(
           'resumable',
           'file.txt',
           'uploadId',
@@ -114,7 +114,7 @@ describe('FilesService', () => {
       };
       (prismaService.file.create as jest.Mock).mockResolvedValue(fileRecord);
 
-      const result = await service.completeUpload(
+      const result = await service.completeUploadingFile(
         'resumable',
         'file.txt',
         'uploadId',
@@ -143,7 +143,13 @@ describe('FilesService', () => {
         new Error('fail'),
       );
       await expect(
-        service.completeUpload('resumable', 'file.txt', 'uploadId', [], 2),
+        service.completeUploadingFile(
+          'resumable',
+          'file.txt',
+          'uploadId',
+          [],
+          2,
+        ),
       ).rejects.toThrow(HttpException);
     });
   });

@@ -17,16 +17,16 @@ import {
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
   @Post('start-upload')
-  async startUpload(@Body() data: StartigUploadDTO) {
-    return await this.filesService.startUpload(data);
+  async startUploadNewFile(@Body() data: StartigUploadDTO) {
+    return await this.filesService.startUploadNewFile(data);
   }
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(
+  async uploadFileChunk(
     @Body() data: FileUploadDTO,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return await this.filesService.upload(
+    return await this.filesService.uploadFileChunk(
       'resumable',
       data.objectName,
       data.uploadId,
@@ -35,8 +35,8 @@ export class FilesController {
     );
   }
   @Post('complete-upload')
-  async completeUpload(@Body() data: CompleteUploadDTO) {
-    return await this.filesService.completeUpload(
+  async completeUploadingFile(@Body() data: CompleteUploadDTO) {
+    return await this.filesService.completeUploadingFile(
       'resumable',
       data.objectName,
       data.uploadId,

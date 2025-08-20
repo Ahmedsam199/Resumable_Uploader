@@ -22,7 +22,7 @@ export class FilesService {
    * @returns An object containing the uploadId, key, and bucket name.
    * @throws HttpException if starting the upload fails.
    */
-  async startUpload(data: StartigUploadDTO) {
+  async startUploadNewFile(data: StartigUploadDTO) {
     try {
       return await this.minio.startMultipart(this.defaultBucket, data.name);
     } catch (error) {
@@ -44,7 +44,7 @@ export class FilesService {
    * @returns An object containing the ETag returned by MinIO and the part number.
    * @throws HttpException with status 500 if the upload fails.
    */
-  async upload(
+  async uploadFileChunk(
     bucket: string,
     objectName: string,
     uploadId: string,
@@ -80,7 +80,7 @@ export class FilesService {
    * @returns The created file record in the database, including its name and path.
    * @throws HttpException with status 500 if completing the upload or saving to the database fails.
    */
-  async completeUpload(
+  async completeUploadingFile(
     bucket: string,
     objectName: string,
     uploadId: string,

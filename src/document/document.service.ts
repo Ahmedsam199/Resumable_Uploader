@@ -11,7 +11,7 @@ export class DocumentService {
     private readonly utils: UtilService,
     private readonly minioService: MinioService,
   ) {}
-  async getAll() {
+  async getAllDocumetns() {
     try {
       return await this.prismaService.document.findMany({
         orderBy: { id: 'desc' },
@@ -23,7 +23,7 @@ export class DocumentService {
       );
     }
   }
-  async create(data: DocumentDTO) {
+  async createNewDocument(data: DocumentDTO) {
     try {
       return await this.prismaService.document.create({ data });
     } catch (error) {
@@ -34,7 +34,7 @@ export class DocumentService {
     }
   }
 
-  async getById(id: number) {
+  async getDocumentById(id: number) {
     try {
       const document = await this.prismaService.document.findUnique({
         where: { id },

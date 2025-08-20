@@ -5,9 +5,9 @@ import { DocumentService } from './document.service';
 describe('DocumentController', () => {
   let controller: DocumentController;
   const mockDocService = {
-    getAll: jest.fn(),
-    create: jest.fn(),
-    getById: jest.fn(),
+    getAllDocuemtn: jest.fn(),
+    createNewDocument: jest.fn(),
+    getDocumentById: jest.fn(),
   };
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
