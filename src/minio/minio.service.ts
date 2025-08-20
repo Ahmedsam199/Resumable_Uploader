@@ -104,15 +104,7 @@ export class MinioService {
     return response;
   }
   // List all parts of a multipart upload
-  async partLists(bucket: string, objectName: string, uploadId: string) {
-    const command = new ListPartsCommand({
-      Bucket: bucket,
-      Key: objectName,
-      UploadId: uploadId,
-    });
-    const response = await this.client.send(command);
-    return response;
-  }
+
   async uploadFile(bucket: string, objectName: string, fileBuffer: Buffer) {
     await this.ensureBucket(bucket);
 

@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { FilesService } from './files.service';
 import { MinioService } from 'src/minio/minio.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { HttpException } from '@nestjs/common';
 
 describe('FilesService', () => {
   let service: FilesService;
@@ -15,9 +16,7 @@ describe('FilesService', () => {
       completeMultipart: jest.fn(),
     };
     const prismaServiceMock = {
-      file: {
-        create: jest.fn(),
-      },
+      file: { create: jest.fn() },
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -51,6 +50,16 @@ describe('FilesService', () => {
       );
       expect(result).toBe(fileInfo);
     });
+
+    it('should throw HttpException if startMultipart fails', async () => {
+      (minioService.startMultipart as jest.Mock).mockRejectedValue(
+        new Error('boom'),
+      );
+
+      await expect(service.startUpload({ name: 'bad.txt' })).rejects.toThrow(
+        HttpException,
+      );
+    });
   });
 
   describe('upload', () => {
@@ -74,6 +83,21 @@ describe('FilesService', () => {
         expect.any(Buffer),
       );
       expect(result).toBe(uploadResult);
+    });
+
+    it('should throw HttpException if uploadPart fails', async () => {
+      (minioService.uploadPart as jest.Mock).mockRejectedValue(
+        new Error('fail'),
+      );
+      await expect(
+        service.upload(
+          'resumable',
+          'file.txt',
+          'uploadId',
+          1,
+          Buffer.from('data'),
+        ),
+      ).rejects.toThrow(HttpException);
     });
   });
 
@@ -114,15 +138,13 @@ describe('FilesService', () => {
       expect(result).toBe(fileRecord);
     });
 
-    it('should handle errors in completeUpload gracefully', async () => {
-      const error = new Error('Upload failed');
-      (minioService.completeMultipart as jest.Mock).mockRejectedValue(error);
-
+    it('should throw HttpException if completeMultipart fails', async () => {
+      (minioService.completeMultipart as jest.Mock).mockRejectedValue(
+        new Error('fail'),
+      );
       await expect(
         service.completeUpload('resumable', 'file.txt', 'uploadId', [], 2),
-      ).rejects.toThrow('Upload failed');
-
-      //Some AI used here for the Test
+      ).rejects.toThrow(HttpException);
     });
   });
 });

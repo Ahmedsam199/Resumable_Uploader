@@ -1,21 +1,28 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { MinioService } from 'src/minio/minio.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { StartigUploadDTO } from './files.DTO';
 
 @Injectable()
 export class FilesService {
+  private readonly defaultBucket = 'resumable';
+
   constructor(
-    private readonly prismaService: PrismaService,
-    private readonly minioService: MinioService,
+    private readonly prisma: PrismaService,
+    private readonly minio: MinioService,
   ) {}
+
   async startUpload(data: StartigUploadDTO) {
-    const fileInfo = await this.minioService.startMultipart(
-      'resumable',
-      data.name,
-    );
-    return fileInfo;
+    try {
+      return await this.minio.startMultipart(this.defaultBucket, data.name);
+    } catch (error) {
+      throw new HttpException(
+        'Failed to start upload',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
+
   async upload(
     bucket: string,
     objectName: string,
@@ -23,37 +30,49 @@ export class FilesService {
     partNumber: number,
     body: Buffer | Uint8Array | Blob,
   ) {
-    return await this.minioService.uploadPart(
-      'resumable',
-      objectName,
-      uploadId,
-      partNumber,
-      body,
-    );
+    try {
+      return await this.minio.uploadPart(
+        bucket || this.defaultBucket,
+        objectName,
+        uploadId,
+        partNumber,
+        body,
+      );
+    } catch (error) {
+      throw new HttpException(
+        'Failed to upload part',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
+
   async completeUpload(
     bucket: string,
     objectName: string,
     uploadId: string,
-    parts: any[],
+    parts: { ETag: string; PartNumber: number }[],
     documentId: number,
   ) {
     try {
-      await this.minioService.completeMultipart(
-        'resumable',
+      await this.minio.completeMultipart(
+        bucket || this.defaultBucket,
         objectName,
         uploadId,
         parts,
       );
-      return await this.prismaService.file.create({
+
+      return await this.prisma.file.create({
         data: {
           name: objectName,
-          documentId: documentId,
-          path: `http://localhost:9000/resumable/${objectName}`,
+          documentId,
+          path: `http://localhost:9000/${bucket || this.defaultBucket}/${objectName}`,
         },
       });
     } catch (error) {
-      throw new Error('Upload failed');
+      throw new HttpException(
+        'Failed to complete upload',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }
