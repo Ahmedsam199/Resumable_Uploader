@@ -30,7 +30,12 @@ export class MinioService {
 
   async ensureBucket(bucket: string) {
     try {
-      const { Buckets } = await this.client.send(new ListBucketsCommand({}));
+      const { Buckets } = await this.client
+        .send(new ListBucketsCommand({}))
+        .catch((error) => {
+          this.logger.error(`Failed to list buckets: ${error.message}`);
+          throw new Error('Upload failed');
+        });
       const exists = Buckets?.some((b) => b.Name === bucket);
       if (!exists) {
         await this.client.send(new CreateBucketCommand({ Bucket: bucket }));
@@ -38,7 +43,7 @@ export class MinioService {
       }
     } catch (error) {
       this.logger.error(`Error ensuring bucket ${bucket}:`, error);
-      throw error;
+      throw new Error('Upload failed');
     }
   }
   // The client Start the multipart will get an id and key

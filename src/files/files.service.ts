@@ -52,7 +52,7 @@ export class FilesService {
         },
       });
     } catch (error) {
-      console.log('Error completing upload:', error);
+      throw new Error('Upload failed');
     }
   }
 }
