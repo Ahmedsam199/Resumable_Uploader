@@ -12,6 +12,7 @@ export class CaseService {
         orderBy: { id: 'desc' },
       });
     } catch (error) {
+      console.log(error);
       throw new HttpException(
         'Failed to fetch cases',
         HttpStatus.INTERNAL_SERVER_ERROR,
