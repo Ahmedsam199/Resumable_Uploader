@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { DocumentDTO } from './document.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UtilService } from 'src/util/util.service';
@@ -12,33 +12,66 @@ export class DocumentService {
     private readonly minioService: MinioService,
   ) {}
   async getAll() {
-    return await this.prismaService.document.findMany({
-      orderBy: { id: 'desc' },
-    });
+    try {
+      return await this.prismaService.document.findMany({
+        orderBy: { id: 'desc' },
+      });
+    } catch (error) {
+      throw new HttpException(
+        'Failed to fetch cases',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
   async create(data: DocumentDTO) {
-    return await this.prismaService.document.create({ data });
+    try {
+      return await this.prismaService.document.create({ data });
+    } catch (error) {
+      throw new HttpException(
+        'Failed to create new document',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
-  // In your service class
 
   async getById(id: number) {
-    const data = await this.prismaService.document.findUnique({
-      where: { id },
-      include: { File: true },
-    });
-    const files = await Promise.all(
-      data.File.map(async (file: any) => ({
-        name: file.name,
-        contentType: this.utils.getFileType(file.name),
-        fileLink: await this.minioService.getFileLink(
-          file.name,
-          this.utils.getFileType(file.name),
-        ),
-      })),
-    );
-    return {
-      ...data,
-      File: files,
-    };
+    try {
+      const document = await this.prismaService.document.findUnique({
+        where: { id },
+        include: { File: true },
+      });
+
+      if (!document) {
+        throw new HttpException('Document not found', HttpStatus.NOT_FOUND);
+      }
+      const files = await Promise.all(
+        document.File.map(async (file: any) => {
+          const contentType = this.utils.getFileType(file.name);
+          const fileLink = await this.minioService.getFileLink(
+            file.name,
+            contentType,
+          );
+
+          return {
+            name: file.name,
+            contentType,
+            fileLink,
+          };
+        }),
+      );
+
+      return {
+        ...document,
+        File: files,
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Failed to fetch document by ID',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

@@ -7,18 +7,23 @@ import {
 } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  CompleteUploadDTO,
+  FileUploadDTO,
+  StartigUploadDTO,
+} from './files.DTO';
 
 @Controller('files')
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
   @Post('start-upload')
-  async startUpload(@Body() data: any) {
+  async startUpload(@Body() data: StartigUploadDTO) {
     return await this.filesService.startUpload(data);
   }
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
-    @Body() data: any,
+    @Body() data: FileUploadDTO,
     @UploadedFile() file: Express.Multer.File,
   ) {
     return await this.filesService.upload(
@@ -30,7 +35,7 @@ export class FilesController {
     );
   }
   @Post('complete-upload')
-  async completeUpload(@Body() data: any) {
+  async completeUpload(@Body() data: CompleteUploadDTO) {
     return await this.filesService.completeUpload(
       'resumable',
       data.objectName,

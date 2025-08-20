@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+} from '@nestjs/common';
 import { DocumentService } from './document.service';
 import { DocumentDTO } from './document.dto';
 
@@ -10,6 +18,7 @@ export class DocumentController {
     return this.documentService.getAll();
   }
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   async createDocument(@Body() data: DocumentDTO) {
     return await this.documentService.create(data);
   }

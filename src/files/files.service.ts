@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { MinioService } from 'src/minio/minio.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { StartigUploadDTO } from './files.DTO';
 
 @Injectable()
 export class FilesService {
@@ -8,7 +9,7 @@ export class FilesService {
     private readonly prismaService: PrismaService,
     private readonly minioService: MinioService,
   ) {}
-  async startUpload(data: any) {
+  async startUpload(data: StartigUploadDTO) {
     const fileInfo = await this.minioService.startMultipart(
       'resumable',
       data.name,

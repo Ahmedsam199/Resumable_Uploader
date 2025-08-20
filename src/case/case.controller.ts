@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+} from '@nestjs/common';
 import { CaseService } from './case.service';
 import { CaseDTO } from './case.DTO';
 
@@ -10,6 +18,7 @@ export class CaseController {
     return await this.caseService.getCases();
   }
   @Post('')
+  @HttpCode(HttpStatus.CREATED)
   async createCase(@Body() data: CaseDTO) {
     return await this.caseService.createCase(data);
   }
