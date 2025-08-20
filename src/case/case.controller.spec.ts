@@ -5,7 +5,6 @@ import { CaseService } from './case.service';
 describe('CaseController', () => {
   let controller: CaseController;
   const mockCaseService = {
-    // mock any methods your controller calls
     createCase: jest.fn(),
     findAll: jest.fn(),
   };
