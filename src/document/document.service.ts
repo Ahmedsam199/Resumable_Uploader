@@ -1,8 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { DocumentDTO } from './document.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UtilService } from 'src/util/util.service';
 import { MinioService } from 'src/minio/minio.service';
+import { DocumentDTO } from '../document/document.DTO';
 
 @Injectable()
 export class DocumentService {

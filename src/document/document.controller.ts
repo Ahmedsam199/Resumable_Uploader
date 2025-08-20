@@ -8,7 +8,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { DocumentService } from './document.service';
-import { DocumentDTO } from './document.dto';
+import { DocumentDTO } from '../document/document.DTO';
 
 @Controller('document')
 export class DocumentController {

@@ -29,7 +29,11 @@ export class MinioService {
       },
     });
   }
-
+  /**
+   * Ensuring the bucket already exist in the minio if not it will be created
+   * @param bucket - String provided by user
+   * @returns URL string of uploaded file
+   */
   async ensureBucket(bucket: string) {
     try {
       const { Buckets } = await this.client
@@ -48,7 +52,14 @@ export class MinioService {
       throw new Error('Upload failed');
     }
   }
-  // The client Start the multipart will get an id and key
+  /**
+   * Starts a multipart upload for an object in MinIO.
+   * Ensures that the specified bucket exists; if not, it will be created.
+   *
+   * @param bucket - The name of the bucket where the object will be uploaded.
+   * @param objectName - The name/key of the object to upload.
+   * @returns An object containing the uploadId, key, and bucket name for the multipart upload.
+   */
   async startMultipart(bucket: string, objectName: string) {
     await this.ensureBucket(bucket);
     const command = new CreateMultipartUploadCommand({
@@ -62,7 +73,16 @@ export class MinioService {
       bucket: bucket,
     };
   }
-  // the user will upload chunks and recive ETage and part number
+  /**
+   * Uploads a single part of a multipart upload to MinIO.
+   *
+   * @param bucket - The name of the bucket where the object is being uploaded.
+   * @param objectName - The name/key of the object being uploaded.
+   * @param uploadId - The ID of the multipart upload returned by startMultipart().
+   * @param partNumber - The sequential part number (starting from 1) of this upload.
+   * @param body - The data to upload for this part (Buffer, Uint8Array, or Blob).
+   * @returns An object containing the ETag returned by MinIO and the part number.
+   */
   async uploadPart(
     bucket: string,
     objectName: string,
@@ -83,7 +103,21 @@ export class MinioService {
       PartNumber: partNumber,
     };
   }
-  // The user will call this to complete the multipart upload and merge all parts
+  /**
+   * Completes a multipart upload in MinIO by assembling all uploaded parts.
+   *
+   * @param bucket - The name of the bucket where the object is being uploaded.
+   * @param objectName - The name/key of the object being uploaded.
+   * @param uploadId - The ID of the multipart upload returned by startMultipart().
+   * @param parts - An array of objects representing uploaded parts, each containing:
+   *   - ETag: The ETag returned by MinIO for that part.
+   *   - PartNumber: The sequential part number of that part.
+   * @returns The response from MinIO after completing the multipart upload and store the file to the bucket.
+   *
+   * @remarks
+   * The parts array will be sorted by PartNumber before completing the upload.
+   * A log entry will be created indicating that the multipart upload is complete.
+   */
   async completeMultipart(
     bucket: string,
     objectName: string,
@@ -103,7 +137,18 @@ export class MinioService {
     this.logger.log(`Multipart upload complete for ${objectName}`);
     return response;
   }
-  // List all parts of a multipart upload
+  /**
+   * Completes a multipart upload in MinIO by assembling all uploaded parts.
+   *
+   * @param bucket - The name of the bucket where the object is being uploaded.
+   * @param objectName - The name/key of the object being uploaded.
+   * @param fileBuffer - The ID of the multipart upload returned by startMultipart().
+   * @returns The response from MinIO after uploading a singl file.
+   *
+   * @remarks
+   * The parts array will be sorted by PartNumber before completing the upload.
+   * A log entry will be created indicating that the multipart upload is complete.
+   */
 
   async uploadFile(bucket: string, objectName: string, fileBuffer: Buffer) {
     await this.ensureBucket(bucket);
@@ -123,6 +168,14 @@ export class MinioService {
       throw error;
     }
   }
+  /**
+   * Get a link for the object thats store in the bucket that will expire and cannot be view after 1H
+   *
+   * @param fileName - The name of the file thats stored in the bucket
+   * @param contentType - The content type of the file like PNG,PDF.
+   
+   * @returns The response will give you temporary link for the file.
+   */
   async getFileLink(fileName: string, contentType: string) {
     const command = new GetObjectCommand({
       Bucket: 'resumable',
