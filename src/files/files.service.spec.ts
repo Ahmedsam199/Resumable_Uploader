@@ -3,7 +3,7 @@ import { FilesService } from './files.service';
 import { MinioService } from 'src/minio/minio.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { HttpException } from '@nestjs/common';
-
+// AI used here to test the file service
 describe('FilesService', () => {
   let service: FilesService;
   let minioService: MinioService;

@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MinioService } from './minio.service';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-
+// AI used here to test the minio service
 let mockSend = jest.fn();
 jest.mock('@aws-sdk/client-s3', () => {
   const actual = jest.requireActual('@aws-sdk/client-s3');

@@ -1,23 +1,37 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { createMock } from '@golevelup/ts-jest';
-import { CaseController } from './case.controller';
 import { CaseService } from './case.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { CaseDTO } from './case.DTO';
+let service: CaseService;
+let prisma: PrismaService;
+beforeAll(async () => {
+  const module: TestingModule = await Test.createTestingModule({
+    providers: [CaseService, PrismaService],
+  }).compile();
 
-describe('CaseController', () => {
-  let controller: CaseController;
+  service = module.get<CaseService>(CaseService);
+  prisma = module.get<PrismaService>(PrismaService);
+});
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [CaseController],
-      providers: [
-        { provide: CaseService, useValue: createMock<CaseService>() },
-      ],
-    }).compile();
+afterAll(async () => {
+  await prisma.$disconnect();
+});
 
-    controller = module.get<CaseController>(CaseController);
+describe('CaseService', () => {
+  it('Shuold be defined', async () => {
+    expect(service).toBeDefined();
   });
-
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
+});
+describe('Get Cases', () => {
+  it('should return all cases from database', async () => {
+    const cases = await service.getCases();
+    expect(cases).toBeDefined();
+  });
+});
+describe('Create a Case', () => {
+  it('Shuould Create a case', async () => {
+    const data: CaseDTO = { name: 'New Case' };
+    const newCase = await service.createCase(data);
+    expect(newCase.name).toBe(data.name);
   });
 });
