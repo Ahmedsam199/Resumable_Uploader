@@ -13,6 +13,7 @@ import {
   FileUploadDTO,
   StartigUploadDTO,
 } from './files.DTO';
+import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 
 @Controller('files')
 export class FilesController {
@@ -31,6 +32,19 @@ export class FilesController {
    */
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        objectName: { type: 'string' },
+        uploadId: { type: 'string' },
+        partNumber: { type: 'number' },
+        file: { type: 'string', format: 'binary' }, // This is the file
+      },
+      required: ['objectName', 'uploadId', 'partNumber', 'file'],
+    },
+  })
   async uploadFileChunk(
     @Body(new ValidationPipe({ transform: true })) data: FileUploadDTO,
     @UploadedFile() file: Express.Multer.File,

@@ -94,7 +94,6 @@ export class FilesService {
         uploadId,
         parts,
       );
-      console.log();
 
       return await this.prisma.file.create({
         data: {
