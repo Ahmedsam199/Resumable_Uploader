@@ -27,7 +27,7 @@ It supports **resumable (multipart) file uploads** to handle unreliable network 
 ### Option 1: Using Pre-built Docker Image (Recommended)
 
 1. Download the Docker image from this link:
-   https://drive.google.com/file/d/1ygi-asJdpu6bzCoBuqbKhjSwIdpZ3kFp/view?usp=sharing
+   https://drive.google.com/file/d/1NZoqlOXFQEMjT1f9N5_4pw9fFJyXZfyY/view?usp=sharing
 2. Load the Docker image:
 
    ```bash
