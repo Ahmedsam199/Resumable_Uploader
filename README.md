@@ -1,6 +1,6 @@
 # Resumable File Uploader
 
-## This backend service manages **cases** , where each case contains **logs** , and each log acts as a folder holding **uploaded files** .
+## This backend service manages **cases** , where each case contains **logs (Refired as documents)** , and each log acts as a folder holding **uploaded files** .
 
 It supports **resumable (multipart) file uploads** to handle unreliable network conditions and pause/resume features.
 
@@ -22,7 +22,7 @@ It supports **resumable (multipart) file uploads** to handle unreliable network 
 
 ---
 
-## Getting Started & Running The App
+## Getting Started & Deployment
 
 ### Option 1: Using Pre-built Docker Image (Recommended)
 
