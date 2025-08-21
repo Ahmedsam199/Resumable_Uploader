@@ -18,7 +18,7 @@ It supports **resumable (multipart) file uploads** to handle unreliable network 
 
 - **Language / Framework:** TypeScript / NestJS
 - **Database:** MySQL (via Prisma)
-- **Other:** Docker, MinIO (via S3 SDK)
+- **Other:** Docker, MinIO (via S3 SDK), Swagger
 
 ---
 
@@ -64,6 +64,8 @@ Create new **.env** file with this value
 
 ```
 DATABASE_URL=mysql://root:Eq11223344@localhost:3306/test
+MINIO_PUBLIC_ENDPOINT=http://minio:9000
+MINIO_FILES_PATH=http://localhost:9000
 ```
 
 #### Running The App

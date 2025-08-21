@@ -1,0 +1,12 @@
+# Node modules (we install them in Docker)
+
+node_modules
+dist
+\*.log
+
+# Environment files (optional, don't include secrets)
+
+.env
+
+.vscode
+.DS_Store
