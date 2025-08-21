@@ -4,6 +4,7 @@ import {
   Post,
   UploadedFile,
   UseInterceptors,
+  ValidationPipe,
 } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -31,7 +32,7 @@ export class FilesController {
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFileChunk(
-    @Body() data: FileUploadDTO,
+    @Body(new ValidationPipe({ transform: true })) data: FileUploadDTO,
     @UploadedFile() file: Express.Multer.File,
   ) {
     return await this.filesService.uploadFileChunk(

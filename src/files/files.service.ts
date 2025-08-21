@@ -94,12 +94,13 @@ export class FilesService {
         uploadId,
         parts,
       );
+      console.log();
 
       return await this.prisma.file.create({
         data: {
           name: objectName,
           documentId,
-          path: `http://localhost:9000/${bucket || this.defaultBucket}/${objectName}`,
+          path: `${bucket || this.defaultBucket}/${objectName}`,
         },
       });
     } catch (error) {

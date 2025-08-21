@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import { IsArray, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class StartigUploadDTO {
@@ -14,6 +15,7 @@ export class FileUploadDTO {
   uploadId: string;
   @IsNotEmpty()
   @IsNumber()
+  @Type(() => Number)
   partNumber: number;
 }
 export class CompleteUploadDTO {

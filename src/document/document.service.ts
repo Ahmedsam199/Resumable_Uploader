@@ -57,6 +57,7 @@ export class DocumentService {
         document.File.map(async (file: any) => {
           const contentType = this.utils.getFileType(file.name);
           const fileLink = await this.minioService.getFileLink(
+            'resumable',
             file.name,
             contentType,
           );

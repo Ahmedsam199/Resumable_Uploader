@@ -19,7 +19,7 @@ export class MinioService {
   //:TODO: put this in .env file (:
   constructor() {
     this.client = new S3Client({
-      endpoint: 'http://localhost:9000',
+      endpoint: process.env.MINIO_PUBLIC_ENDPOINT || 'http://minio:9000',
       region: 'us-east-1',
       forcePathStyle: true,
 
@@ -176,16 +176,25 @@ export class MinioService {
    
    * @returns The response will give you temporary link for the file.
    */
-  async getFileLink(fileName: string, contentType: string) {
+  async getFileLink(bucket: string, fileName: string, contentType: string) {
+    const client = new S3Client({
+      endpoint: process.env.MINIO_FILES_PATH || 'http://localhost:9000',
+      region: 'us-east-1',
+      forcePathStyle: true,
+      credentials: {
+        accessKeyId: 'minioadmin',
+        secretAccessKey: 'minioadmin',
+      },
+    });
+
     const command = new GetObjectCommand({
-      Bucket: 'resumable',
+      Bucket: bucket,
       Key: fileName,
       ResponseContentDisposition: 'inline',
       ResponseContentType: contentType,
     });
 
-    const url = await getSignedUrl(this.client, command, { expiresIn: 3600 }); // 1 hour expiry
-
+    const url = await getSignedUrl(client, command, { expiresIn: 3600 });
     return url;
   }
 }
