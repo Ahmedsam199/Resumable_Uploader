@@ -128,7 +128,11 @@ describe('MinioService', () => {
   describe('getFileLink', () => {
     it('should return signed url', async () => {
       (getSignedUrl as jest.Mock).mockResolvedValue('http://signed-url');
-      const url = await service.getFileLink('file.txt', 'text/plain');
+      const url = await service.getFileLink(
+        'resumable',
+        'file.txt',
+        'text/plain',
+      );
       expect(url).toBe('http://signed-url');
     });
   });

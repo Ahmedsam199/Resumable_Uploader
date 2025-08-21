@@ -132,7 +132,7 @@ describe('FilesService', () => {
         data: {
           name: 'file.txt',
           documentId: 2,
-          path: 'http://localhost:9000/resumable/file.txt',
+          path: 'resumable/file.txt',
         },
       });
       expect(result).toBe(fileRecord);
