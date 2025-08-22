@@ -392,3 +392,19 @@ curl -X POST http://localhost:3000/files/complete-upload \
   -H "Content-Type: application/json" \
   -d '{"objectName": "object-key", "uploadId": "upload-id", "documentId": 1, "parts": [{"ETag": "etag1", "partNumber": 1}]}'
 ```
+
+---
+
+## API Documentation (Swagger UI)
+
+This service comes with built-in **Swagger UI** for exploring and testing all endpoints.
+
+- **URL:** `http://localhost:3000/api`
+- **Format:** Interactive OpenAPI documentation
+- **Features:**
+  - View all endpoints for Cases, Documents, and Files
+  - Try out requests directly from the browser
+  - See detailed request/response schemas and examples
+  - Understand the full **resumable upload workflow**
+
+When the backend is running (via Docker or locally), open [http://localhost:3000/api](http://localhost:3000/api) in your browser to explore the API.
