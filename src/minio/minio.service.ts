@@ -16,7 +16,6 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 export class MinioService {
   private readonly logger = new Logger(MinioService.name);
   private client: S3Client;
-  //:TODO: put this in .env file (:
   constructor() {
     this.client = new S3Client({
       endpoint: process.env.MINIO_PUBLIC_ENDPOINT || 'http://minio:9000',
