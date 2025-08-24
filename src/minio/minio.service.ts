@@ -18,13 +18,13 @@ export class MinioService {
   private client: S3Client;
   constructor() {
     this.client = new S3Client({
-      endpoint: process.env.MINIO_PUBLIC_ENDPOINT || 'http://minio:9000',
+      endpoint: process.env.MINIO_PUBLIC_ENDPOINT,
       region: 'us-east-1',
       forcePathStyle: true,
 
       credentials: {
-        accessKeyId: 'minioadmin',
-        secretAccessKey: 'minioadmin',
+        accessKeyId: process.env.MINIO_ACCESS_KEY,
+        secretAccessKey: process.env.MINIO_SECRET_KEY,
       },
     });
   }
@@ -177,12 +177,12 @@ export class MinioService {
    */
   async getFileLink(bucket: string, fileName: string, contentType: string) {
     const client = new S3Client({
-      endpoint: process.env.MINIO_FILES_PATH || 'http://localhost:9000',
+      endpoint: process.env.MINIO_FILES_PATH,
       region: 'us-east-1',
       forcePathStyle: true,
       credentials: {
-        accessKeyId: 'minioadmin',
-        secretAccessKey: 'minioadmin',
+        accessKeyId: process.env.MINIO_ACCESS_KEY,
+        secretAccessKey: process.env.MINIO_SECRET_KEY,
       },
     });
 
